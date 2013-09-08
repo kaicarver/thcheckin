@@ -12,6 +12,24 @@ var th = ['','thousand','million', 'billion','trillion'];
 
 var dg = ['zero','one','two','three','four', 'five','six','seven','eight','nine']; var tn = ['ten','eleven','twelve','thirteen', 'fourteen','fifteen','sixteen', 'seventeen','eighteen','nineteen']; var tw = ['twenty','thirty','forty','fifty', 'sixty','seventy','eighty','ninety']; function toWords(s){s = s.toString(); s = s.replace(/[\, ]/g,''); if (s != parseFloat(s)) return 'not a number'; var x = s.indexOf('.'); if (x == -1) x = s.length; if (x > 15) return 'too big'; var n = s.split(''); var str = ''; var sk = 0; for (var i=0; i < x; i++) {if ((x-i)%3==2) {if (n[i] == '1') {str += tn[Number(n[i+1])] + ' '; i++; sk=1;} else if (n[i]!=0) {str += tw[n[i]-2] + ' ';sk=1;}} else if (n[i]!=0) {str += dg[n[i]] +' '; if ((x-i)%3==0) str += 'hundred ';sk=1;} if ((x-i)%3==1) {if (sk) str += th[(x-i-1)/3] + ' ';sk=0;}} if (x != s.length) {var y = s.length; str += 'point '; for (var i=x+1; i<y; i++) str += dg[n[i]] +' ';} return str.replace(/\s+/g,' ');}
 
+// sound stuff
+
+// Test if the browser supports playing Ogg Vorbis
+var canPlayOgg = !!(new Audio().canPlayType('audio/ogg; codecs="vorbis"'));
+
+function PlayHTML5Audio()
+{
+
+    var soundFile = 'sound.ogg';
+    soundFile = 'oddbounce.ogg';
+
+    if (canPlayOgg)
+	new Audio(soundFile).play();
+    else
+	new Audio("sound.m4a").play();
+}
+
+// end sound stuff
 
 var serverurl = 'http://tpehack.no-ip.biz:12000'
 var checkinlink = serverurl+'/inspace';
@@ -59,6 +77,7 @@ $(document).ready(function() {
     }
 
     var displayCheckin = function(people) {
+        PlayHTML5Audio();
 	var names = [];
 	var nonames = 0;
 	for (var i = 0; i < people.length; i++) {
@@ -68,10 +87,11 @@ $(document).ready(function() {
 		names.push("<strong>"+people[i].name+"</strong>");
 	    }
 	}
-	var text = '';
+	var text = 'Right now ';
+	var testLocation = "checked in the Taipei Hackerspace";
 	var totalcount = nonames + names.length;
 	if (totalcount == 0) {
-	    text = 'Right now <strong>no-one</strong> is checked in the Hackerspace.';
+	    text += '<strong>no-one</strong> is ' + testLocation + '.';
 	} else {
 	    var verb = 'are';
 	    var noun = 'people';
@@ -79,7 +99,7 @@ $(document).ready(function() {
 		verb = 'is';
 		noun = 'person';
 	    }
-	    text = 'Right now there '+verb+' <strong>'+toWords(totalcount)+' '+noun+'</strong> checked in the Hackerspace';
+	    text += 'there '+verb+' <strong>'+toWords(totalcount)+' '+noun+'</strong> ' + testLocation;
 	    if (names.length == 0) {
 		text += '.';
 	    } else {
@@ -99,6 +119,7 @@ $(document).ready(function() {
 
     var socket = io.connect(serverurl);
     socket.on('people', function (data) {
+        console.log(data);
 	displayCheckin(data.people);
     });
 });
