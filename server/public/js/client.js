@@ -31,7 +31,7 @@ function PlayHTML5Audio()
 
 // end sound stuff
 
-var serverurl = 'http://tpehack.no-ip.biz'
+var serverurl = 'http://taipeihack.org'
 var checkinlink = serverurl+'/inspace';
 var peopleheader = '<tr id="peoplelistheader"><td><strong>Name</strong></td><td><strong>Arrival</strong></td></tr>';
 var peopleupdateinterval = 2 * 1000;  //ms
